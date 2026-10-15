@@ -17,7 +17,7 @@ pipeline {
         
         stage('Docker Build') {
             steps {
-                bat 'docker build -t corporate-website:v1 .'
+                bat "docker build -t corporate-website:${env.BUILD_NUMBER} ."
             }
         }
         
@@ -25,7 +25,7 @@ pipeline {
             steps {
                 bat 'kubectl apply -f k8s/deployment.yaml'
                 bat 'kubectl apply -f k8s/service.yaml'
-                // This ensures Kubernetes fetches the newest version of the image
+                bat "kubectl set image deployment/corporate-website-deployment corporate-website=corporate-website:${env.BUILD_NUMBER}"
                 bat 'kubectl rollout restart deployment/corporate-website-deployment'
             }
         }
